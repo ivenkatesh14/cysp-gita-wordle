@@ -1,7 +1,8 @@
 {
-  "name": "wordle",
+  "name": "Wordle ไทย",
+  "homepage": "https://buddhistuniversity.net/wordle-thai",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
@@ -18,6 +19,8 @@
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
     "typescript": "^4.5.4",
+    "react-ga4": "^1.4.1",
+    "copy-to-clipboard": "^3.3.1",
     "web-vitals": "^2.1.3"
   },
   "scripts": {

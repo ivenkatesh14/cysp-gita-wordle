@@ -1,12 +1,14 @@
 import { Cell } from './Cell'
+import { splitWord } from '../../lib/words'
+import { WORDLEN } from '../../constants/wordlist'
 
 type Props = {
   guess: string
 }
 
 export const CurrentRow = ({ guess }: Props) => {
-  const splitGuess = guess.split('')
-  const emptyCells = Array.from(Array(5 - splitGuess.length))
+  const splitGuess = splitWord(guess)
+  const emptyCells = Array.from(Array(WORDLEN - splitGuess.length))
 
   return (
     <div className="flex justify-center mb-1">

@@ -1,23 +1,30 @@
 import { getGuessStatuses } from './statuses'
-import { solutionIndex } from './words'
+import { solutionIndex, splitWord } from './words'
+import copy from 'copy-to-clipboard'
 
 export const shareStatus = (guesses: string[], lost: boolean) => {
-  navigator.clipboard.writeText(
-    `Not Wordle ${solutionIndex} ${lost ? 'X' : guesses.length}/6\n\n` +
-      generateEmojiGrid(guesses)
-  )
+  const text =
+      'เวิร์ดเดล ' +
+      (solutionIndex+1) +
+      ' ' +
+      (lost?'X':guesses.length) +
+      '/6\n\n' +
+      generateEmojiGrid(guesses) +
+      '\n\nhttps://bit.ly/wordlethai'
+  return copy(text, { format: 'text/plain' })
 }
 
 export const generateEmojiGrid = (guesses: string[]) => {
   return guesses
     .map((guess) => {
       const status = getGuessStatuses(guess)
-      return guess
-        .split('')
+      return splitWord(guess)
         .map((letter, i) => {
           switch (status[i]) {
             case 'correct':
               return '🟩'
+            case 'mismarked':
+              return '🟦'
             case 'present':
               return '🟨'
             default:

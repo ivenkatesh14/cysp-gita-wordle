@@ -33,16 +33,16 @@ export const StatsModal = ({
     )
   }
   return (
-    <BaseModal title="Statistics" isOpen={isOpen} handleClose={handleClose}>
+    <BaseModal title="สถิติ" isOpen={isOpen} handleClose={handleClose}>
       <StatBar gameStats={gameStats} />
       <h4 className="text-lg leading-6 font-medium text-gray-900">
-        Guess Distribution
+        จำนวนครั้งที่ใช้
       </h4>
       <Histogram gameStats={gameStats} />
       {(isGameLost || isGameWon) && (
         <div className="mt-5 sm:mt-6 columns-2">
           <div>
-            <h5>New word in</h5>
+            <h5>คำใหม่</h5>
             <Countdown
               className="text-lg font-medium text-gray-900"
               date={tomorrow}
@@ -53,11 +53,10 @@ export const StatsModal = ({
             type="button"
             className="mt-2 w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
             onClick={() => {
-              shareStatus(guesses, isGameLost)
-              handleShare()
+              if (shareStatus(guesses, isGameLost)) handleShare()
             }}
           >
-            Share
+            แชร์
           </button>
         </div>
       )}

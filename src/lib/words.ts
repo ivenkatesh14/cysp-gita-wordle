@@ -1,10 +1,26 @@
-import { WORDS } from '../constants/wordlist'
+import { WORDS, EPOCH, WORDLEN } from '../constants/wordlist'
 import { VALIDGUESSES } from '../constants/validGuesses'
 
-export const isWordInWordList = (word: string) => {
+export const splitWord = (
+  word: string
+): string[] => {
+    var ret = Array(WORDLEN).fill('');
+    var i = -1;
+    const proper = word.split('');
+    for(const j of proper) {
+        if (/[\u0e47-\u0e4c\u0e31\u0e34-\u0e3a]/.test(j)) {
+            ret[i] += j;
+        } else {
+            ret[++i] = j;
+        }
+    }
+    return ret;
+}
+
+export const isWordInWordList = (word: string): boolean => {
   return (
-    WORDS.includes(word.toLowerCase()) ||
-    VALIDGUESSES.includes(word.toLowerCase())
+    WORDS.includes(word) ||
+    VALIDGUESSES.includes(word)
   )
 }
 
@@ -13,15 +29,14 @@ export const isWinningWord = (word: string) => {
 }
 
 export const getWordOfDay = () => {
-  // January 1, 2022 Game Epoch
-  const epochMs = 1641013200000
   const now = Date.now()
   const msInDay = 86400000
-  const index = Math.floor((now - epochMs) / msInDay)
-  const nextday = (index + 1) * msInDay + epochMs
+  var index = Math.floor((now - EPOCH) / msInDay)
+  const nextday = (index + 1) * msInDay + EPOCH
+  index %= WORDS.length
 
   return {
-    solution: WORDS[index].toUpperCase(),
+    solution: WORDS[index],
     solutionIndex: index,
     tomorrow: nextday,
   }

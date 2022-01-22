@@ -5,7 +5,7 @@ import classNames from 'classnames'
 type Props = {
   isOpen: boolean
   message: string
-  variant?: 'success' | 'warning'
+  variant?: 'success' | 'warning' | 'info'
 }
 
 export const Alert = ({ isOpen, message, variant = 'warning' }: Props) => {
@@ -14,6 +14,7 @@ export const Alert = ({ isOpen, message, variant = 'warning' }: Props) => {
     {
       'bg-rose-200': variant === 'warning',
       'bg-green-200 z-20': variant === 'success',
+      'bg-slate-200': variant === 'info',
     }
   )
 
@@ -24,13 +25,13 @@ export const Alert = ({ isOpen, message, variant = 'warning' }: Props) => {
       enter="ease-out duration-300 transition"
       enterFrom="opacity-0"
       enterTo="opacity-100"
-      leave="transition ease-in duration-100"
+      leave="transition ease-in duration-200"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
       <div className={classes}>
         <div className="p-4">
-          <p className="text-sm text-center font-medium text-gray-900">
+          <p className="text-center font-medium text-gray-900">
             {message}
           </p>
         </div>
