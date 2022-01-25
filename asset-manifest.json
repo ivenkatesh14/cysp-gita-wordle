@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/wordle-thai/static/css/main.c736101c.css",
-    "main.js": "/wordle-thai/static/js/main.843aaf63.js",
+    "main.js": "/wordle-thai/static/js/main.34564814.js",
     "static/js/787.bec2c0f9.chunk.js": "/wordle-thai/static/js/787.bec2c0f9.chunk.js",
     "index.html": "/wordle-thai/index.html",
     "main.c736101c.css.map": "/wordle-thai/static/css/main.c736101c.css.map",
-    "main.843aaf63.js.map": "/wordle-thai/static/js/main.843aaf63.js.map",
+    "main.34564814.js.map": "/wordle-thai/static/js/main.34564814.js.map",
     "787.bec2c0f9.chunk.js.map": "/wordle-thai/static/js/787.bec2c0f9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c736101c.css",
-    "static/js/main.843aaf63.js"
+    "static/js/main.34564814.js"
   ]
 }
