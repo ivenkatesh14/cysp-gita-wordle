@@ -1,17 +1,20 @@
-import { WORDS, EPOCH, WORDLEN } from '../constants/wordlist'
+import { WORDS, EPOCH } from '../constants/wordlist'
+import { GLOSSES } from '../constants/glosses'
 import { VALIDGUESSES } from '../constants/validGuesses'
+
+export const ASPIRABLES = "tdckgjḍṭpb";
 
 export const splitWord = (
   word: string
 ): string[] => {
-    var ret = Array(WORDLEN).fill('');
-    var i = -1;
-    const proper = word.split('');
-    for(const j of proper) {
-        if (/[\u0e47-\u0e4c\u0e31\u0e34-\u0e3a]/.test(j)) {
-            ret[i] += j;
+    var ret = word.normalize().split('');
+    var i = 1;
+    while (i < ret.length) {
+        if (ret[i] === 'h' && ASPIRABLES.includes(ret[i-1])) {
+            ret[i-1] += 'h';
+            ret.splice(i,1);
         } else {
-            ret[++i] = j;
+            i++;
         }
     }
     return ret;
@@ -20,7 +23,8 @@ export const splitWord = (
 export const isWordInWordList = (word: string): boolean => {
   return (
     WORDS.includes(word) ||
-    VALIDGUESSES.includes(word)
+    VALIDGUESSES.includes(word) ||
+    GLOSSES.hasOwnProperty(word)
   )
 }
 

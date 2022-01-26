@@ -1,1 +1,2 @@
-export const WIN_MESSAGES = ["แจ่มเลย!", "ทำได้ดี", "งานดี!"];
+export const WIN_MESSAGES = ["Sādhu!", "Sampadā!"];
+

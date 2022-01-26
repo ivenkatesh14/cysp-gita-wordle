@@ -33,16 +33,16 @@ export const StatsModal = ({
     )
   }
   return (
-    <BaseModal title="สถิติ" isOpen={isOpen} handleClose={handleClose}>
+    <BaseModal title="Statistics" isOpen={isOpen} handleClose={handleClose}>
       <StatBar gameStats={gameStats} />
       <h4 className="text-lg leading-6 font-medium text-gray-900">
-        จำนวนครั้งที่ใช้
+        Guess Distribution
       </h4>
       <Histogram gameStats={gameStats} />
       {(isGameLost || isGameWon) && (
         <div className="mt-5 sm:mt-6 columns-2">
           <div>
-            <h5>คำใหม่</h5>
+            <h5>New word in</h5>
             <Countdown
               className="text-lg font-medium text-gray-900"
               date={tomorrow}
@@ -56,7 +56,7 @@ export const StatsModal = ({
               if (shareStatus(guesses, isGameLost)) handleShare()
             }}
           >
-            แชร์
+            Share
           </button>
         </div>
       )}

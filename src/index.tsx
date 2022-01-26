@@ -1,9 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ReactGA from 'react-ga4'
+import ReactGA from 'react-ga'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+
+function round(num: number): number {
+  const f = Math.floor(num)
+  return Math.random() + f < num ? Math.ceil(num) : f
+}
 
 const REPORT = Math.random() < 0.05
 
@@ -24,6 +29,6 @@ reportWebVitals(({ id, name, value }) => {
       action: name,
       label: id,
       nonInteraction: true,
-      value: value,
+      value: round(name === 'CLS' ? value * 1000 : value),
     })
 })

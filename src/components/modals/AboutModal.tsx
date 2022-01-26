@@ -7,31 +7,31 @@ type Props = {
 
 export const AboutModal = ({ isOpen, handleClose }: Props) => {
   return (
-    <BaseModal title="เกี่ยวกับ" isOpen={isOpen} handleClose={handleClose}>
-        <p className="text-gray-500">
-          เกมนี้เป็น
-          <a
-            href="https://github.com/buddhist-uni/wordle-thai"
-            className="underline font-bold"
-          >
-            โอเพ่นซอร์ส
-          </a>
-          ถูกสร้างขึ้นจาก
-          <a
-            href="https://github.com/hannahcode/wordle"
-            className="underline font-bold"
-          >
-            โค้ดของ Hannah Park
-          </a>{' '}
-          และ
-          <a
-            href="https://www.powerlanguage.co.uk/wordle/"
-            className="underline font-bold"
-          >
-            เกมต้นฉบับภาษาอังกฤษของ Josh Wardle
-          </a>{' '}
-          แต่เกมนี้ไม่เกี่ยวข้องกับพวกเขา
-        </p>
+    <BaseModal title="About" isOpen={isOpen} handleClose={handleClose}>
+      <p className="text-sm text-gray-500">
+        This is an{' '}
+        <a
+          href="https://github.com/obu-labs/wordle-pali"
+          className="underline font-bold"
+        >
+          open source
+        </a>{' '}
+        clone of{' '}
+        <a
+          href="https://www.powerlanguage.co.uk/wordle/"
+          className="underline font-bold"
+        >
+          the popular, original game by Josh Wardle
+        </a>{' '}
+        based on the Pali Dictionaries on{' '}
+        <a
+          href="https://suttacentral.net/"
+          className="underline font-bold"
+        >
+          SuttaCentral
+        </a>.
+        This webpage is not endorsed by either.
+      </p>
     </BaseModal>
   )
 }

@@ -2,122 +2,106 @@
 
 ///////////////////////////////////////////
 //
-// This script converts the various Thai wordlists in this directory to the World dicts:
-//   - wordlist.ts: The big list of day-by-day hidden words. Target size ~2000 entries
-//   - validGuesses.ts: A big list of acceptable words. Target size ~10000 entries
-//   - tonemarks.ts: A big dictionary of where to put accents over the above words
+// This script converts the various Pali dictionaries in this directory to the Wordle dicts:
+//   - wordlist.ts: The big list of day-by-day hidden words.
+//   - validGuesses.ts: A big list of acceptable words.
+//   - glosses.ts: short definitions of words to teach Pali
+// 
+// The dictionaries are from github.com/suttacentral/sc-data
 //
-// A note on the source files:
-//   From PyThaiNLP/corpus:
-//      - words_th.txt:  A very large and fairly well scrubbed list of Thai words from many sources
-//      - tnc_freq.txt:  A count of occurences of words in the Thai National Corpus
-//      - ttc_freq.txt:  A count of occurences of words in the Thai Textbook Corpus
-//   From nevmenandr/thai-language/new_data:
-//      - Word.frequency.txt: A count of word occurences on Thai websites.
-//   From @nv23:
-//      - thai-wordlist.txt:  A filtered version of the Thai Royal Institute Dictionary
-//   From https://gist.github.com/anonymous/36568e5aaa73790e718757ff5f481afe
-//      - thai.dict:  Apparently an unfiltered version of the R.I.D.
-//
-//  The strategy is:
-//       1. the wordlist should contain ~1000–2000 commonly-used words that are in the RID 
-//       2. the validGuesses should contain all words in the dictionary and common words
+// The strategy is to include a word in the wordlist if at least two dictionaries agree
+// that its a real word. validGuesses includes all the words in just one dictionary.
 //
 ////////////////////////////////////////////
 
 const fs = require("fs");
 const F8 = "utf-8";
 const WORDLEN = 5;
-const WHITELIST = ['จากลา']
-const BLACKLIST = [ "กระดอ", "กระเด้า", "กระหรี่", "กะปิ", "กู", "ขี้", "ควย", "จิ๋ม", "จู๋", "เจ๊ก", "เจี๊ยว", "ดอกทอง", "ตอแหล", "ตูด", "น้ําแตก", "มึง", "แม่ง", "เย็ด", "รูตูด", "ล้างตู้เย็น", "ส้นตีน", "สัด", "เสือก", "หญิงชาติชั่ว", "หลั่ง", "ห่า", "หํา", "หี", "เหี้ย", "อมนกเขา", "ไอ้ควาย" ,];
-
-const OVERRIDE_DICT_FREQ = 1500;
-const WLIST_MIN_FREQ = 250;
-const GUESS_MIN_FREQ = 40;
-const NONTHAI_WORD = /[^\u0e01-\u0e2e\u0e30-\u0e39\u0e40-\u0e44\u0e47-\u0e4c]/;
 const OUTPATH = "../src/constants/";
 const OUTEXT = ".ts";
+const ASPIRABLES = "tdkcgjḍṭpb";
+const FORMABLES = ASPIRABLES + "aiun";
 
-function removeAccents(word) {
-   return word.replace(/[\u0e34-\u0e3a]/g,'')
-     .replace(/[\u0e31]/g,'')
-     .replace(/[\u0e47-\u0e4c]/g,'');
-}
-function isValidThaiWord(word) {
-   if (NONTHAI_WORD.test(word)) return false;
-   return (removeAccents(word).length == WORDLEN);
-}
-
-class DefaultDict {
-  constructor(defaultVal) {
-    return new Proxy({}, {
-      get: (target, name) => name in target ? target[name] : defaultVal
-    })
-  }
-}
-
-// Construct the master word frequency dictionary
-var freqs = new DefaultDict(0);
-function addToFreqsDict(freqs, filename, sep) {
-    console.log("Reading in " + filename + "...");
-    var data = fs.readFileSync(filename, F8);
-    data = data.split('\n');
-    for (const line of data) {
-        const [w, f] = line.split(sep);
-        if (isValidThaiWord(w)) {
-            freqs[w] += Number.parseInt(f);
+function splitWord(word) {
+    if (!word) return [];
+    var ret = word.normalize().split('');
+    var i = 1;
+    while (i < ret.length) {
+        if (ret[i] === 'h' && ASPIRABLES.includes(ret[i-1])) {
+            ret[i-1] += 'h';
+            ret.splice(i,1);
+        } else {
+            i++;
         }
     }
+    return ret;
 }
-addToFreqsDict(freqs, "Word.frequency.txt", " - ");
-addToFreqsDict(freqs, "tnc_freq.txt", "\t");
-addToFreqsDict(freqs, "ttc_freq.txt", "\t");
 
-function importWordlist(filename) {
-    console.log("Reading in " + filename + "...");
-    var data = fs.readFileSync(filename, F8).split('\n');
-    var ret = new Set();
-    for (const word of data) {
-        if (isValidThaiWord(word)) {
-            ret.add(word);
-        }
-    }
-    return [...ret];
+function isValidWord(word) {
+    return splitWord(word).length === WORDLEN;
 }
-var official_words = importWordlist("thai.dict");
-var bigwordlist = importWordlist("words_th.txt");
-bigwordlist = bigwordlist.concat(
-    official_words.filter(w => !bigwordlist.includes(w))
-);
-var freq_keys = Object.keys(freqs);
+
+function importDict(filename) {
+    const raw = JSON.parse(fs.readFileSync(filename, F8));
+    console.log("Reading in " + raw.length + " entries from " + filename + "...");
+    var k = 'entry';
+    if (raw[0].hasOwnProperty('word')) k = 'word';
+    var v = k;
+    if (raw[0].hasOwnProperty('definition')) v = 'definition';
+    if (raw[0].hasOwnProperty('gloss')) v = 'gloss';
+    return Object.fromEntries(raw.filter(e => isValidWord(e[k])).map(e => {
+        var d = e[v];
+        if (Array.isArray(d)) d = d.reduce((a,b) => (a.length<b.length)?a:b); 
+        return [e[k], d];
+    }));
+}
+
+const glossary = importDict('pli2en_glossary.json');
+const cpd = importDict('pli2en_ncped.json');
+const ped = importDict('pli2en_pts.json');
 
 // CONSTRUCTION TIME
 
-console.log("Building final word lists...");
-var wordlist = official_words.filter(w => freqs[w]>=WLIST_MIN_FREQ && !BLACKLIST.includes(w))
-  .concat(WHITELIST)
-  .concat(freq_keys.filter(w => !official_words.includes(w)&&freqs[w]>=OVERRIDE_DICT_FREQ));
-var validGuesses = bigwordlist.concat(
-    freq_keys.filter(
-        w => !bigwordlist.includes(w)
-    ).filter(
-        w => freqs[w]>=GUESS_MIN_FREQ
-    )
+console.log("Building word lists...");
+let allglosses = {...cpd};
+Object.entries(glossary).forEach(([k,v]) => allglosses[k] = v);
+var glosswords = Object.keys(allglosses);
+var wordlist = Object.keys(cpd);
+var validGuesses = Object.keys(ped).concat(
+    glosswords.filter(w => !ped.hasOwnProperty(w))
+).concat(
+    wordlist.filter(w => !ped.hasOwnProperty(w) && !glossary.hasOwnProperty(w))
+);
+wordlist = wordlist.filter(w => ped.hasOwnProperty(w) || glossary.hasOwnProperty(w));
+wordlist.concat(
+    Object.keys(glossary).filter(w => !wordlist.includes(w) && ped.hasOwnProperty(w))
 );
 
-var examples = validGuesses.filter(w => !wordlist.includes(w) && w in freqs && !['แอล', 'ปรา'].includes(w)).sort((a, b) => freqs[b]-freqs[a]).slice(0, 6);
-// Ensure examples[1][0] is not โใเแไ
-for (var i=0; i<examples.length; i++) {
-  if (!"โใเแไ".includes(examples[i][0])) {
-    [examples[i], examples[1]] = [examples[1], examples[i]];
-    break;
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+  while (currentIndex > 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
   }
+  return array;
+}
+wordlist = shuffle(wordlist);
+var examples = wordlist.splice(wordlist.length-4);
+const formletter = Math.floor(WORDLEN/2);
+for(var i=0; i<4; i++){
+  if (FORMABLES.includes(splitWord(examples[i])[formletter].normalize('NFD')[0])) {
+     [examples[1], examples[i]] = [examples[i], examples[1]];
+     break;
+   }
 }
 
 console.log("Done!\n");
 console.log("About to write to file:");
 console.log("   worldlist.ts: " + wordlist.length);
 console.log("   valideGuesses.ts: " + validGuesses.length);
+console.log("   glosses.ts: " + glosswords.length);
 console.log("With InfoModal examples:");
 for (const w of examples) {
 console.log("   " + w);
@@ -134,20 +118,11 @@ if (getChar() != "y\n") {
 }
 
 console.log("Optimizing storage...");
+
 validGuesses = [...new Set(validGuesses)];
 wordlist = new Set(wordlist);
-validGuesses = validGuesses.filter(w => !wordlist.has(w));
-function shuffle(array) {
-  let currentIndex = array.length,  randomIndex;
-  while (currentIndex > 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-  return array;
-}
-wordlist = shuffle([...wordlist]);
+validGuesses = validGuesses.filter(w => !wordlist.has(w) && !allglosses.hasOwnProperty(w));
+var wordlist = [...wordlist];
 
 var epoch = (new Date()).setHours(0, 0, 0, 0);
 
@@ -159,5 +134,9 @@ fs.writeFileSync(
 fs.writeFileSync(
     OUTPATH + "wordlist" + OUTEXT,
     "export const WORDS = " + JSON.stringify(wordlist) + ";\nexport const EPOCH = " + epoch + ";\nexport const EXAMPLES = " + JSON.stringify(examples) + ";\nexport const WORDLEN = " + WORDLEN + ";\n"
+);
+fs.writeFileSync(
+    OUTPATH + "glosses" + OUTEXT,
+    "export const GLOSSES: Record<string, string> = " + JSON.stringify(allglosses) + ";"
 );
 

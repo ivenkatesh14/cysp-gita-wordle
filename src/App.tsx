@@ -1,7 +1,7 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import { ChartBarIcon } from '@heroicons/react/outline'
 import { useState, useEffect } from 'react'
-import ReactGA from 'react-ga4'
+import ReactGA from 'react-ga'
 import { Alert } from './components/alerts/Alert'
 import { Grid } from './components/grid/Grid'
 import { Keyboard } from './components/keyboard/Keyboard'
@@ -9,10 +9,16 @@ import { AboutModal } from './components/modals/AboutModal'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { WIN_MESSAGES } from './constants/strings'
-import { isWordInWordList, isWinningWord, solution, splitWord } from './lib/words'
+import {
+  isWordInWordList,
+  isWinningWord,
+  solution,
+  splitWord,
+} from './lib/words'
 import { addStatsForCompletedGame, loadStats } from './lib/stats'
 import { generateRedundancyWarning } from './lib/statuses'
 import { WORDLEN } from './constants/wordlist'
+import { GLOSSES } from './constants/glosses'
 import {
   loadGameStateFromLocalStorage,
   saveGameStateToLocalStorage,
@@ -24,20 +30,20 @@ function App() {
   const [currentGuess, setCurrentGuess] = useState('')
   const [isGameWon, setIsGameWon] = useState(false)
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
+  const [infoMessage, setInfoMessage] = useState('')
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [redundancyWarning, setRedundancyWarning] = useState('')
   const [justWarnedWord, setJustWarnedWord] = useState('')
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
-  const [isShifted, setIsShifted] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [isGameLost, setIsGameLost] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
+  const [winAlert, setWinAlert] = useState(false)
   const [guesses, setGuesses] = useState<string[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded === null) {
-      setIsInfoModalOpen(true);
-      ReactGA.event('tutorial_begin');
+      setIsInfoModalOpen(true)
     }
     if (loaded?.solution !== solution) {
       return []
@@ -60,15 +66,22 @@ function App() {
 
   useEffect(() => {
     if (isGameWon) {
-      setSuccessAlert(
-        WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
-      )
+      setWinAlert(true)
       setTimeout(() => {
-        setSuccessAlert('')
         setIsStatsModalOpen(true)
-      }, ALERT_TIME_MS)
+      }, ALERT_TIME_MS*2)
+      setTimeout(() => {
+        setWinAlert(false)
+      }, ALERT_TIME_MS*4)
     }
     if (isGameLost) {
+      setInfoMessage(
+        `Today's word was "${solution}"` +
+          (GLOSSES.hasOwnProperty(solution)
+            ? `, meaning "${GLOSSES[solution]}"`
+            : '') +
+          '. Better luck tomorrow!'
+      )
       setTimeout(() => {
         setIsStatsModalOpen(true)
       }, ALERT_TIME_MS)
@@ -76,9 +89,28 @@ function App() {
   }, [isGameWon, isGameLost])
 
   const onChar = (value: string) => {
-    var splitGuess = splitWord(currentGuess+value);
+    var nextGuess = currentGuess + value
+    const p = currentGuess[currentGuess.length - 1]
+    if (value === '~' && p === 'n') {
+      nextGuess = currentGuess.slice(0, -1) + 'ñ'
+    }
+    if (value === '.' && 'ntdl'.includes(p)) {
+      nextGuess = (currentGuess + '\u0323').normalize()
+    }
+    if (value === '.' && p === 'm') {
+      nextGuess = (currentGuess + '\u0307').normalize()
+    }
+    if ('gk'.includes(value) && p === 'ṇ') {
+      nextGuess =
+        currentGuess.substring(0, currentGuess.length - 1) + 'ṅ' + value
+    }
+    if ('-_'.includes(value) && 'aiu'.includes(p)) {
+      nextGuess = (currentGuess + '̄').normalize()
+    }
+    if ('.-_~'.includes(nextGuess[nextGuess.length - 1])) return
+    var splitGuess = splitWord(nextGuess)
     if (splitGuess.length <= WORDLEN && guesses.length < 6 && !isGameWon) {
-      setCurrentGuess(`${currentGuess}${value}`)
+      setCurrentGuess(nextGuess)
     }
   }
 
@@ -87,41 +119,37 @@ function App() {
       setJustWarnedWord('')
       setRedundancyWarning('')
     }
-    setCurrentGuess(currentGuess.slice(0, -1))
-  }
-
-  const onShift = () => {
-    setIsShifted(!isShifted)
+    if (currentGuess[currentGuess.length - 2] === 'ṅ')
+      setCurrentGuess(currentGuess.slice(0, -2) + 'ṇ')
+    else setCurrentGuess(currentGuess.slice(0, -1))
   }
 
   const onInfoModal = () => {
-    setIsInfoModalOpen(true);
+    setIsInfoModalOpen(true)
     ReactGA.event({
-      category: "modals",
-      action: "open",
-      label: "info"
-    });
+      category: 'modals',
+      action: 'open',
+      label: 'info',
+    })
   }
 
   const onEnter = () => {
     if (isGameWon || isGameLost) {
       return
     }
-    var splitGuess = splitWord(currentGuess);
+    var splitGuess = splitWord(currentGuess)
     var ga_event = {
-        category: "gameplay",
-        action: "submit",
-        label: currentGuess,
-        dimension: {
-            "guess_number": guesses.length
-        }
-    };
+      category: 'gameplay',
+      action: 'submit',
+      label: currentGuess,
+      metric1: guesses.length,
+    }
     if (!(splitGuess.length === WORDLEN)) {
-      setIsNotEnoughLetters(true);
+      setIsNotEnoughLetters(true)
       setJustWarnedWord('')
       setRedundancyWarning('')
-      ga_event.action = 'short-submit';
-      ReactGA.event(ga_event);
+      ga_event.action = 'short-submit'
+      ReactGA.event(ga_event)
       return setTimeout(() => {
         setIsNotEnoughLetters(false)
       }, ALERT_TIME_MS)
@@ -129,15 +157,15 @@ function App() {
 
     if (!isWordInWordList(currentGuess)) {
       setIsWordNotFoundAlertOpen(true)
-      ga_event.action = 'unfound-submit';
-      ReactGA.event(ga_event);
+      ga_event.action = 'unfound-submit'
+      ReactGA.event(ga_event)
       setJustWarnedWord('')
       setRedundancyWarning('')
       return setTimeout(() => {
         setIsWordNotFoundAlertOpen(false)
       }, ALERT_TIME_MS)
     }
-    
+
     if (justWarnedWord !== currentGuess && stats.bestStreak <= 0) {
       var redundancy = generateRedundancyWarning(currentGuess, guesses)
       if (redundancy) {
@@ -158,22 +186,34 @@ function App() {
 
     const winningWord = isWinningWord(currentGuess)
 
-    ga_event.action = 'valid-submit';
-    ReactGA.event(ga_event);
+    ga_event.action = 'valid-submit'
+    ReactGA.event(ga_event)
     if (guesses.length < 6 && !isGameWon) {
       setGuesses([...guesses, currentGuess])
       setCurrentGuess('')
 
       if (winningWord) {
         setStats(addStatsForCompletedGame(stats, guesses.length))
-        ReactGA.event('level_end', { success: true });
+        ReactGA.event({
+          category: 'gameplay',
+          action: 'win',
+          metric1: guesses.length,
+        })
         return setIsGameWon(true)
       }
 
       if (guesses.length === 5) {
         setStats(addStatsForCompletedGame(stats, guesses.length + 1))
-        ReactGA.event("level_end", { success: false });
+        ReactGA.event({
+          category: 'gameplay',
+          action: 'loss',
+          label: currentGuess,
+          metric1: guesses.length,
+        })
         setIsGameLost(true)
+      } else if (!winningWord && GLOSSES.hasOwnProperty(currentGuess)) {
+        setInfoMessage(`${currentGuess}: ${GLOSSES[currentGuess]}`)
+        setTimeout(() => setInfoMessage(''), ALERT_TIME_MS * 2)
       }
     }
   }
@@ -181,7 +221,7 @@ function App() {
   return (
     <div className="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div className="flex w-80 mx-auto items-center mb-8">
-        <h1 className="text-xl grow font-bold">Wordle ไทย</h1>
+        <h1 className="text-xl grow font-bold">Pali Wordle</h1>
         <InformationCircleIcon
           className="mx-2 h-6 w-6 cursor-pointer"
           onClick={() => onInfoModal()}
@@ -189,12 +229,12 @@ function App() {
         <ChartBarIcon
           className="mx-2 h-6 w-6 cursor-pointer"
           onClick={() => {
-            setIsStatsModalOpen(true);
+            setIsStatsModalOpen(true)
             ReactGA.event({
-              category: "modals",
-              action: "open",
-              label: "stats"
-            });
+              category: 'modals',
+              action: 'open',
+              label: 'stats',
+            })
           }}
         />
       </div>
@@ -203,50 +243,52 @@ function App() {
         onChar={onChar}
         onDelete={onDelete}
         onEnter={onEnter}
-        onShift={onShift}
         guesses={guesses}
-        isShifted={isShifted}
       />
       <InfoModal
         isOpen={isInfoModalOpen}
         handleClose={() => {
-          setIsInfoModalOpen(false);
+          setIsInfoModalOpen(false)
           ReactGA.event({
-            category: "modals",
-            action: "close",
-            label: "info"
-          });
+            category: 'modals',
+            action: 'close',
+            label: 'info',
+          })
         }}
       />
       <StatsModal
         isOpen={isStatsModalOpen}
         guesses={guesses}
         handleClose={() => {
-          setIsStatsModalOpen(false);
+          setIsStatsModalOpen(false)
           ReactGA.event({
-            category: "modals",
-            action: "close",
-            label: "stats"
-          });
+            category: 'modals',
+            action: 'close',
+            label: 'stats',
+          })
         }}
         gameStats={stats}
         isGameLost={isGameLost}
         isGameWon={isGameWon}
         handleShare={() => {
-            ReactGA.event("share");
-            setSuccessAlert("คัดลอกแล้ว");
-            return setTimeout(() => setSuccessAlert(''), ALERT_TIME_MS);
+          ReactGA.event({
+            category: 'social',
+            action: 'share',
+            label: 'clipboard',
+          })
+          setSuccessAlert('Game copied to clipboard')
+          return setTimeout(() => setSuccessAlert(''), ALERT_TIME_MS)
         }}
       />
       <AboutModal
         isOpen={isAboutModalOpen}
         handleClose={() => {
-          setIsAboutModalOpen(false);
+          setIsAboutModalOpen(false)
           ReactGA.event({
-            category: "modals",
-            action: "close",
-            label: "about"
-          });
+            category: 'modals',
+            action: 'close',
+            label: 'about',
+          })
         }}
       />
 
@@ -254,35 +296,46 @@ function App() {
         type="button"
         className="mx-auto mt-8 flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
         onClick={() => {
-          setIsAboutModalOpen(true);
+          setIsAboutModalOpen(true)
           ReactGA.event({
-            category: "modals",
-            action: "open",
-            label: "about"
-          });
+            category: 'modals',
+            action: 'open',
+            label: 'about',
+          })
         }}
       >
-        เกี่ยวกับเกมนี้
+        About
       </button>
 
-      <Alert message="ตัวหนังสือไม่ครบ" isOpen={isNotEnoughLetters} />
+      <Alert message="Too short!" isOpen={isNotEnoughLetters} />
       <Alert message={redundancyWarning} isOpen={redundancyWarning !== ''} />
-      <Alert message="ไม่มีคำนี้" isOpen={isWordNotFoundAlertOpen} />
       <Alert
-        message={`วั้ย อ่อนจุง คำตอบคือ  "${solution}"`}
-        isOpen={isGameLost}
-        variant="info"
+        message="That isn't in the PED..."
+        isOpen={isWordNotFoundAlertOpen}
       />
+      <Alert message={infoMessage} isOpen={infoMessage !== ''} variant="info" />
       <Alert
         message={successAlert}
         isOpen={successAlert !== ''}
         variant="success"
       />
+      <Alert
+        message={
+          WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)] +
+          ` Today's word was "${solution}"` +
+          (GLOSSES.hasOwnProperty(solution)
+            ? `, meaning "${GLOSSES[solution]}"`
+            : '') +
+          '.'
+        }
+        isOpen={winAlert}
+        variant="win"
+      />
     </div>
   )
 }
 
-ReactGA.initialize("G-FSN024QQN6");
-ReactGA.send("pageview");
+ReactGA.initialize('UA-159403467-2')
+ReactGA.pageview('/wordle-pali')
 
 export default App
