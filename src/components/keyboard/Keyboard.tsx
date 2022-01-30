@@ -30,7 +30,10 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses }: Props) => {
       } else if (e.code === 'Backspace') {
         onDelete()
       } else {
-        if (e.key.length === 1 && '.-_~aāiīuūeoṃkgṅcjñṭḍṇtdnpbmyrlḷvsh'.includes(e.key)) {
+        if (
+          e.key.length === 1 &&
+          '.-_~aāiīuūeoṃkgṅcjñṭḍṇtdnpbmyrlḷvsh'.includes(e.key)
+        ) {
           onChar(e.key)
         }
       }

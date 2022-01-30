@@ -5,11 +5,11 @@ import copy from 'copy-to-clipboard'
 export const shareStatus = (guesses: string[], lost: boolean) => {
   const text =
     'Pali Wordle ' +
-      (solutionIndex+1) +
-      ' ' +
-      (lost?'X':guesses.length) +
-      '/6\n\n' +
-      generateEmojiGrid(guesses)
+    (solutionIndex + 1) +
+    ' ' +
+    (lost ? 'X' : guesses.length) +
+    '/6\n\n' +
+    generateEmojiGrid(guesses)
   return copy(text, { format: 'text/plain' })
 }
 

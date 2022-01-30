@@ -5,6 +5,7 @@
 
 _To Run Locally:_
 Clone the repository and perform the following command line actions:
+
 ```bash
 $ cd wordle
 $ npm install
@@ -12,4 +13,3 @@ $ npm run start
 ```
 
 open http://localhost:3000 in browser.
-

@@ -69,10 +69,10 @@ function App() {
       setWinAlert(true)
       setTimeout(() => {
         setIsStatsModalOpen(true)
-      }, ALERT_TIME_MS*2)
+      }, ALERT_TIME_MS * 2)
       setTimeout(() => {
         setWinAlert(false)
-      }, ALERT_TIME_MS*4)
+      }, ALERT_TIME_MS * 4)
     }
     if (isGameLost) {
       setInfoMessage(

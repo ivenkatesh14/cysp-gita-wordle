@@ -2,22 +2,20 @@ import { WORDS, EPOCH } from '../constants/wordlist'
 import { GLOSSES } from '../constants/glosses'
 import { VALIDGUESSES } from '../constants/validGuesses'
 
-export const ASPIRABLES = "tdckgjḍṭpb";
+export const ASPIRABLES = 'tdckgjḍṭpb'
 
-export const splitWord = (
-  word: string
-): string[] => {
-    var ret = word.normalize().split('');
-    var i = 1;
-    while (i < ret.length) {
-        if (ret[i] === 'h' && ASPIRABLES.includes(ret[i-1])) {
-            ret[i-1] += 'h';
-            ret.splice(i,1);
-        } else {
-            i++;
-        }
+export const splitWord = (word: string): string[] => {
+  var ret = word.normalize().split('')
+  var i = 1
+  while (i < ret.length) {
+    if (ret[i] === 'h' && ASPIRABLES.includes(ret[i - 1])) {
+      ret[i - 1] += 'h'
+      ret.splice(i, 1)
+    } else {
+      i++
     }
-    return ret;
+  }
+  return ret
 }
 
 export const isWordInWordList = (word: string): boolean => {

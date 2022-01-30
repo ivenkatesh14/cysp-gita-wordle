@@ -24,13 +24,10 @@ export const AboutModal = ({ isOpen, handleClose }: Props) => {
           the popular, original game by Josh Wardle
         </a>{' '}
         based on the Pali Dictionaries on{' '}
-        <a
-          href="https://suttacentral.net/"
-          className="underline font-bold"
-        >
+        <a href="https://suttacentral.net/" className="underline font-bold">
           SuttaCentral
-        </a>.
-        This webpage is not endorsed by either.
+        </a>
+        . This webpage is not endorsed by either.
       </p>
     </BaseModal>
   )
