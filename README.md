@@ -1,4 +1,4 @@
-# Pali Wordle
+# Sanskrit Wordle
 
 - Inspired by the original Wordle [here](https://www.powerlanguage.co.uk/wordle/)
 - And forked from the React implementation [here](https://github.com/hannahcode/wordle)
