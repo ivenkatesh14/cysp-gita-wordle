@@ -221,7 +221,7 @@ function App() {
   return (
     <div className="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div className="flex w-80 mx-auto items-center mb-8">
-        <h1 className="text-xl grow font-bold">Pali Wordle</h1>
+        <h1 className="text-xl grow font-bold">Sanskrit Wordle</h1>
         <InformationCircleIcon
           className="mx-2 h-6 w-6 cursor-pointer"
           onClick={() => onInfoModal()}
@@ -336,6 +336,6 @@ function App() {
 }
 
 ReactGA.initialize('UA-159403467-2')
-ReactGA.pageview('/wordle-pali')
+ReactGA.pageview('/wordle-sanskrit')
 
 export default App

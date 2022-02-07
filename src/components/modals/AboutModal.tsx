@@ -11,7 +11,7 @@ export const AboutModal = ({ isOpen, handleClose }: Props) => {
       <p className="text-sm text-gray-500">
         This is an{' '}
         <a
-          href="https://github.com/obu-labs/wordle-pali"
+          href="https://github.com/skalyan91/wordle-sanskrit"
           className="underline font-bold"
         >
           open source
@@ -23,9 +23,9 @@ export const AboutModal = ({ isOpen, handleClose }: Props) => {
         >
           the popular, original game by Josh Wardle
         </a>{' '}
-        based on the Pali Dictionaries on{' '}
-        <a href="https://suttacentral.net/" className="underline font-bold">
-          SuttaCentral
+        based on the Sanskrit Dictionary at the{' '}
+        <a href="http://www.sanskrit-linguistics.org/dcs/" className="underline font-bold">
+          Digital Corpus of Sanskrit
         </a>
         . This webpage is not endorsed by either.
       </p>

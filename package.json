@@ -1,6 +1,6 @@
 {
-  "name": "Wordle Pali",
-  "homepage": "https://labs.buddhistuniversity.net/wordle-pali",
+  "name": "Wordle Sanskrit",
+  "homepage": "https://skalyan91.github.io/wordle-sanskrit",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
