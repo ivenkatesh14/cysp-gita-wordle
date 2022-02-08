@@ -29,6 +29,7 @@ export type CharValue =
   | '~'
   | '.'
   | '-'
+  | '’'
 
 function denormSplit(word: string) {
   return splitWord(word).map((w) => w.normalize('NFD'))

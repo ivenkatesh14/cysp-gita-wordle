@@ -32,7 +32,7 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses }: Props) => {
       } else {
         if (
           e.key.length === 1 &&
-          '.-_~aāiīuūṛḷeoṃḥkgṅcjñṭḍṇtdnpbmyrlvśṣsh'.includes(e.key)
+          '.’-_~aāiīuūṛḷeoṁḥkgṅcjñṭḍṇtdnpbmyrlvśṣsh'.includes(e.key)
         ) {
           onChar(e.key)
         }
@@ -67,7 +67,7 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses }: Props) => {
         <Key value="j" onClick={onClick} status={charStatuses['j']} />
         <Key value="k" onClick={onClick} status={charStatuses['k']} />
         <Key value="l" onClick={onClick} status={charStatuses['l']} />
-        <Key value="&#x27;" onClick={onClick} status={charStatuses['\u0027']} />
+        <Key value="’" onClick={onClick} status={charStatuses['’']} />
       </div>
       <div className="flex justify-center">
         <Key width={65.4} value="DELETE" onClick={onClick}>
