@@ -32,7 +32,7 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses }: Props) => {
       } else {
         if (
           e.key.length === 1 &&
-          '.-_~aāiīuūeoṃkgṅcjñṭḍṇtdnpbmyrlḷvsh'.includes(e.key)
+          '.-_~aāiīuūṛḷeoṃḥkgṅcjñṭḍṇtdnpbmyrlvśṣsh'.includes(e.key)
         ) {
           onChar(e.key)
         }
