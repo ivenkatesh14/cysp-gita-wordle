@@ -94,7 +94,10 @@ function App() {
     if (value === '~' && p === 'n') {
       nextGuess = currentGuess.slice(0, -1) + 'ñ'
     }
-    if (value === '.' && 'ntdl'.includes(p)) {
+    if (value === "'" && p === 's') {
+      nextGuess = currentGuess.slice(0, -1) + 'ś'
+    }
+    if (value === '.' && 'rlhtdns'.includes(p)) {
       nextGuess = (currentGuess + '\u0323').normalize()
     }
     if (value === '.' && p === 'm') {
@@ -107,7 +110,7 @@ function App() {
     if ('-_'.includes(value) && 'aiu'.includes(p)) {
       nextGuess = (currentGuess + '̄').normalize()
     }
-    if ('.-_~'.includes(nextGuess[nextGuess.length - 1])) return
+    if (".-_~'".includes(nextGuess[nextGuess.length - 1])) return
     var splitGuess = splitWord(nextGuess)
     if (splitGuess.length <= WORDLEN && guesses.length < 6 && !isGameWon) {
       setCurrentGuess(nextGuess)
