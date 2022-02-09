@@ -11,6 +11,9 @@ export const splitWord = (word: string): string[] => {
     if (ret[i] === 'h' && ASPIRABLES.includes(ret[i - 1])) {
       ret[i - 1] += 'h'
       ret.splice(i, 1)
+    } else if (ret[i - 1] === 'a' && 'iu'.includes(ret[i])) {
+      ret[i - 1] += ret[i]
+      ret.splice(i, 1)
     } else {
       i++
     }
