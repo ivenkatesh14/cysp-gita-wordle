@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/wordle-sanskrit/static/css/main.548e3601.css",
-    "main.js": "/wordle-sanskrit/static/js/main.fcf8eb25.js",
+    "main.js": "/wordle-sanskrit/static/js/main.99905951.js",
     "static/js/787.fb408df4.chunk.js": "/wordle-sanskrit/static/js/787.fb408df4.chunk.js",
     "index.html": "/wordle-sanskrit/index.html",
     "main.548e3601.css.map": "/wordle-sanskrit/static/css/main.548e3601.css.map",
-    "main.fcf8eb25.js.map": "/wordle-sanskrit/static/js/main.fcf8eb25.js.map",
+    "main.99905951.js.map": "/wordle-sanskrit/static/js/main.99905951.js.map",
     "787.fb408df4.chunk.js.map": "/wordle-sanskrit/static/js/787.fb408df4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.548e3601.css",
-    "static/js/main.fcf8eb25.js"
+    "static/js/main.99905951.js"
   ]
 }
