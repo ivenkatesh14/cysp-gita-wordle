@@ -1,5 +1,6 @@
-# Sanskrit Wordle
+# Gita Wordle
 
+- Cloned from the sanskrit Wordle [here](https://github.com/skalyan91/wordle-sanskrit/)
 - Inspired by the original Wordle [here](https://www.powerlanguage.co.uk/wordle/)
 - And forked from the React implementation [here](https://github.com/hannahcode/wordle)
 
