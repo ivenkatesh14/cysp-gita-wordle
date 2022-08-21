@@ -1197,4 +1197,15 @@ export const GLOSSES: Record<string, string> = {
   nikkha: 'gold coin',
   niḍḍa: 'nest',
   nyāsa: 'mortgage',
+  param: 'the supreme' ,
+  sarve: 'all' ,
+  karma: 'reward-seeking actions' ,
+  tasya: 'his' ,
+  yasya: 'whose' ,
+  āsīta: 'seated' ,
+  namaḥ: 'hail' ,
+  kartā: 'the doer' ,
+  gurūn: 'teacher' ,
+  tatam: 'father' ,
+
 }
