@@ -339,6 +339,6 @@ function App() {
 }
 
 ReactGA.initialize('UA-159403467-2')
-ReactGA.pageview('/gita-wordle')
+ReactGA.pageview('/')
 
 export default App
